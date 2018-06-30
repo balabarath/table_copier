@@ -1,0 +1,17 @@
+copy_config:
+  delete_tables_before_copy: true
+  tables:
+    - 'transactions'
+    - 'payments'
+  source_db:
+    name: 'shopping_cart'
+    host: 'localhost'
+    port: 5432
+    user_name: 'cart_admin'
+    password: 'password'
+  destination_db:
+    name: 'shopping_cart_test'
+    host: 'localhost'
+    port: 5432
+    user_name: 'cart_admin'
+    password: 'password'
