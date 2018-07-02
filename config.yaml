@@ -1,8 +1,10 @@
 copy_config:
-  delete_tables_before_copy: true
+  delete_destination_db_tables_record_before_copy: false
   tables:
-    - 'transactions'
-    - 'payments'
+    - name: 'transactions'
+      filter: "transaction_date='2018-06-18'"
+    - name: 'payments'
+      filter: "payment_date='2018-06-18'"
   source_db:
     name: 'shopping_cart'
     host: 'localhost'

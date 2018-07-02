@@ -6,9 +6,11 @@ def get_connection_string(db_config):
     return 'postgresql://{}:{}@{}:{}/{}'.format(db_config['user_name'], db_config['password'], \
     db_config['host'], db_config['port'], db_config['name'])
 
-def get_copy_query(source_conn, destination_conn, table_name):
-    return 'psql -d {} -c "COPY {} TO stdout" | psql -d {} -c "COPY {} FROM stdin"'.format(source_conn, \
-    table_name, destination_conn, table_name)
+def get_copy_query(source_conn, destination_conn, table):
+    table_name = table['name']
+    filter = table['filter']
+    return 'psql -d {} -c "COPY (SELECT * FROM {} WHERE {}) TO stdout" | psql -d {} -c "COPY {} FROM stdin"'.format(source_conn, \
+    table_name, filter, destination_conn, table_name)
 
 def execute_command(command):
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -30,7 +32,7 @@ def delete_records(connection_string, table_name):
         print "DELETE OPERATION FAILED."
 
 def copy_records(source_conn, destination_conn, table_name):
-    copy_command = get_copy_query(source_conn, destination_conn, table_name)
+    copy_command = get_copy_query(source_conn, destination_conn, table)
     is_copy_success = execute_command(copy_command)
     if not is_copy_success:
         print "COPY OPERATION FAILED."
@@ -58,13 +60,14 @@ with open("config.yaml", 'r') as stream:
             exit(1)
         print "---------- DATABASES CONNECTION CHECK SUCCESS -------------- "
 
-        for table_name in copy_config['tables']:
-            if copy_config['delete_tables_before_copy']:
+        for table in copy_config['tables']:
+            table_name = table['name']
+            if copy_config['delete_destination_db_tables_record_before_copy']:
                 print '---------- DELETING all the records in {} table --------------'.format(table_name)
                 delete_records(destination_conn, table_name)
             print '"---------- COPYING all the records in from {} database to {} for {} table "----------'.format(source_db['name'], \
-            destination_db['name'], table_name)
-            copy_records(source_conn, destination_conn, table_name)
+            destination_db['name'], table['name'])
+            copy_records(source_conn, destination_conn, table)
 
     except yaml.YAMLError as err:
         print(err)
