@@ -28,9 +28,7 @@ Set the 'delete_destination_db_tables_record_before_copy' property to 'true' to 
 
 ## Authors
 
-* **Balasubramanian Naagarajan** - *Initial work* - (https://github.com/balabarath)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Balasubramanian Naagarajan** - (https://github.com/balabarath)
 
 ## License
 
